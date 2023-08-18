@@ -15,7 +15,10 @@ public class RecebeMensagemService {
         String text = new ObjectMapper().readValue(payload.getMessage(), String.class);
         JSONObject objeto = new JSONObject(text);
 
-        System.out.println(objeto.toString());
+        if(objeto.has("produto"))
+            System.out.println("é produto");
+        else 
+            System.out.println("nota");
         return "Mensagem recebida!";
     }
 
