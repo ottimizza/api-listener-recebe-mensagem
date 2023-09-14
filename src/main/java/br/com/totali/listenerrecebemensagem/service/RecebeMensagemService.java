@@ -39,6 +39,8 @@ public class RecebeMensagemService {
                 .IPMiddlewareServidor("")
                 .PortaMiddlewareServidor(0)
             .build();
+        ObjectMapper mapper = new ObjectMapper();
+        System.out.println(mapper.writeValueAsString(authentication));
         String token = middlewareClient.getToken(authentication, authorization).getBody();
         System.out.println(token);
         return "Mensagem recebida!";
