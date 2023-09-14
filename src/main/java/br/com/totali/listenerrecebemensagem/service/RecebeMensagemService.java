@@ -14,11 +14,7 @@ public class RecebeMensagemService {
         KafkaPayloadMessage payload = new ObjectMapper().readValue(mensagem, KafkaPayloadMessage.class);
         String text = new ObjectMapper().readValue(payload.getMessage(), String.class);
         JSONObject objeto = new JSONObject(text);
-
-        if(objeto.has("produto"))
-            System.out.println("é produto");
-        else 
-            System.out.println("nota");
+        System.out.println(objeto);
         return "Mensagem recebida!";
     }
 
