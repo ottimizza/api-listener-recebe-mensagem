@@ -12,6 +12,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 public interface MiddlewareClient {
  
     @PostMapping(value = "/datasnap/rest/TConexaoAPI/ConectaMiddleware", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> getToken(@RequestBody String objeto, @RequestHeader("Authorization") String authorization);
+    public ResponseEntity<String> getToken(@RequestBody JSONObject objeto, @RequestHeader("Authorization") String authorization);
 
 }
