@@ -18,7 +18,7 @@ public class KafkaConsumers {
     private RecebeMensagemService service;
 
     @KafkaListener(topics = "#{kafkaProperties.getPrefix()}mensagem",
-                       groupId = "#{kafkaProperties.getPrefix()}envia-mensagem-group")
+                    groupId = "#{kafkaProperties.getPrefix()}envia-mensagem-group")
     public void recebeMensagem(@Payload String mensagem) throws Exception {
         try {
             service.recebeMensagem(mensagem);
