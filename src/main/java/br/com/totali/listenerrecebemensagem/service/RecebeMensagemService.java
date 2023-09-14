@@ -1,48 +1,43 @@
 package br.com.totali.listenerrecebemensagem.service;
 
-import java.util.Base64;
-
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.com.totali.listenerrecebemensagem.clients.HttpMethodsClient;
 import br.com.totali.listenerrecebemensagem.clients.MiddlewareClient;
 import br.com.totali.listenerrecebemensagem.domain.commands.KafkaPayloadMessage;
-import br.com.totali.listenerrecebemensagem.domain.dto.MiddlewareAuthentication;
+import br.com.totali.listenerrecebemensagem.utils.AuthenticationUtils;
 
 @Service
 public class RecebeMensagemService {
     
     @Autowired
-    MiddlewareClient middlewareClient;
+    private MiddlewareClient middlewareClient;
+
+    private HttpMethodsClient methodsClient;
 
     public String recebeMensagem(String mensagem) throws Exception {
+        AuthenticationUtils authenticationUtils = new AuthenticationUtils();
         KafkaPayloadMessage payload = new ObjectMapper().readValue(mensagem, KafkaPayloadMessage.class);
         String text = new ObjectMapper().readValue(payload.getMessage(), String.class);
+        JSONObject object = new JSONObject(text);
 
-        String authorization = Base64.getEncoder().encodeToString(("totall"+"112233").getBytes());
-        JSONObject body = new JSONObject("{    \"VersaoLayout\": 2,    \"CodigoEmpresa\": 0,    \"UserOS\": \"pedro\",    \"DataSolicitacao\": \"14\\/09\\/2023 09:13:05\",    \"NomeMaquina\": \"PEDRO-PC\",    \"VersaoBase\": 250,    \"NomeSistema\": \"TestadorMiddlewareService\",    \"VersaoSistema\": \"1.0\",    \"TipoRetorno\": \"S\",    \"CNPJ\": \"04303719000152\",    \"IPMiddlewareServidor\": \"\",    \"PortaMiddlewareServidor\": 0}");
-        
-        MiddlewareAuthentication authentication = MiddlewareAuthentication.builder()
-                .VersaoLayout(2)
-                .CodigoEmpresa(0)
-                .UserOS("pedro")
-                .DataSolicitacao("14/09/2023 09:13:05")
-                .NomeMaquina("PEDRO-PC")
-                .VersaoBase(250)
-                .NomeSistema("TestadorMiddlewareService")
-                .VersaoSistema("1.0")
-                .TipoRetorno("S")
-                .CNPJ("04303719000152")
-                .IPMiddlewareServidor("")
-                .PortaMiddlewareServidor(0)
-            .build();
-        ObjectMapper mapper = new ObjectMapper();
-        System.out.println(mapper.writeValueAsString(authentication));
-        String token = middlewareClient.getToken(authentication, authorization).getBody();
-        System.out.println(token);
+        //GERANDO TOKEN PARA A AUTENTICACAO DENTRO DAS APLICACOES 
+        String token = authenticationUtils.generateToken();
+        //Envio de request para outras aplicacoes a partir de client ou urls recebidas do body
+
+        //ENVIO A PARTIR DE UM AMBIENTE EM QUE A URL PODE VARIAR
+        methodsClient.postMethod(object.optString("requestUrl"), 
+                                 object.optString("requestBody"), 
+                                 object.optString("webhookUrl"),
+                                 token);
+
+        //ENVIO A PARTIR DE UM AMBIENTE COM URL PADRAO
+        middlewareClient.postObject(text, token);
+
         return "Mensagem recebida!";
     }
 

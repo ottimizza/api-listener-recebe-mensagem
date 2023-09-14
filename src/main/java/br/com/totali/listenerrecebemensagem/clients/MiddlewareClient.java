@@ -1,6 +1,5 @@
 package br.com.totali.listenerrecebemensagem.clients;
 
-import org.json.JSONObject;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,5 +14,8 @@ public interface MiddlewareClient {
  
     @PostMapping(value = "/datasnap/rest/TConexaoAPI/ConectaMiddleware", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getToken(@RequestBody MiddlewareAuthentication objeto, @RequestHeader("Authorization") String authorization);
+
+    @PostMapping(value = "/post/object")
+    public ResponseEntity<String> postObject(@RequestBody String object, @RequestHeader("Authorization") String authorization);
 
 }
